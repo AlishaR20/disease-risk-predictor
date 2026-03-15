@@ -28,7 +28,7 @@ An AI-powered Disease Risk Predictor that analyzes lifestyle data such as diet, 
 
 ✅ Visual risk score dashboard with severity levels
 
-✅ Privacy-first — no health data stored
+✅ Privacy-first no health data stored
 
 ---
 
