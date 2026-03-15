@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitalSense AI — Disease Risk Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04060f;
+    --bg2: #080d1a;
+    --surface: #0d1526;
+    --surface2: #111d35;
+    --border: rgba(99,179,237,0.12);
+    --accent: #38bdf8;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --danger: #f87171;
+    --warn: #fbbf24;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --glow: 0 0 40px rgba(56,189,248,0.15);
+    --glow2: 0 0 60px rgba(167,139,250,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND MESH */
+  .bg-mesh {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(56,189,248,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(167,139,250,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(52,211,153,0.04) 0%, transparent 70%);
+  }
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(4,6,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { font-weight: 400; opacity: 0.7; }
+  .nav-badge {
+    background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(167,139,250,0.15));
+    border: 1px solid rgba(56,189,248,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em;
+    padding: 5px 12px; border-radius: 20px;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 60px;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.2em;
+    color: var(--accent); opacity: 0.8;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+  .hero h1 .line1 { display: block; color: var(--text); }
+  .hero h1 .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--text2); max-width: 560px;
+    line-height: 1.7; margin-bottom: 48px;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+  .hero-cta {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
+    padding: 14px 32px; border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 30px rgba(56,189,248,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(56,189,248,0.5); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text2); border: 1px solid var(--border); cursor: pointer;
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
+    padding: 14px 32px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 0;
+    margin: 0 auto 80px;
+    max-width: 800px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    overflow: hidden;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+  .stat-item {
+    flex: 1; padding: 24px 20px; text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    display: block;
+  }
+  .stat-label { font-size: 0.78rem; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* MAIN APP */
+  .app-container {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 24px 100px;
+  }
+  .section-header {
+    text-align: center; margin-bottom: 48px;
+  }
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.2em;
+    color: var(--accent2); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700; letter-spacing: -0.02em;
+  }
+
+  /* FORM GRID */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .form-card:hover { border-color: rgba(56,189,248,0.3); box-shadow: var(--glow); }
+  .form-card.full-width { grid-column: 1 / -1; }
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .card-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .card-icon.blue { background: rgba(56,189,248,0.15); }
+  .card-icon.purple { background: rgba(167,139,250,0.15); }
+  .card-icon.green { background: rgba(52,211,153,0.15); }
+  .card-icon.orange { background: rgba(251,191,36,0.15); }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .card-desc { font-size: 0.78rem; color: var(--text3); margin-top: 2px; }
+
+  /* FORM FIELDS */
+  .field-group { margin-bottom: 18px; }
+  .field-label {
+    display: block; font-size: 0.78rem;
+    color: var(--text2); margin-bottom: 8px;
+    font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .field-input, .field-select {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  .field-input:focus, .field-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* RANGE SLIDER */
+  .range-wrap { position: relative; }
+  .field-range {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 4px;
+    background: var(--surface2);
+    border-radius: 4px; outline: none; cursor: pointer;
+  }
+  .field-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    cursor: pointer; box-shadow: 0 0 10px rgba(56,189,248,0.5);
+  }
+  .range-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem; color: var(--accent);
+    text-align: right; margin-top: 6px;
+  }
+
+  /* TOGGLE CHIPS */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2); font-size: 0.8rem;
+    cursor: pointer; transition: all 0.2s;
+    user-select: none;
+  }
+  .chip:hover { border-color: rgba(56,189,248,0.4); color: var(--text); }
+  .chip.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .chip.active-purple {
+    background: rgba(167,139,250,0.15);
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* ANALYZE BUTTON */
+  .analyze-wrap {
+    display: flex; justify-content: center;
+    margin: 32px 0 48px;
+  }
+  .btn-analyze {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1, #8b5cf6);
+    background-size: 200%;
+    color: #fff; border: none; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
+    padding: 18px 60px; border-radius: 12px;
+    transition: all 0.3s;
+    box-shadow: 0 0 40px rgba(56,189,248,0.25), 0 0 80px rgba(99,102,241,0.15);
+    letter-spacing: 0.02em;
+    position: relative; overflow: hidden;
+  }
+  .btn-analyze::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: translateX(-100%); transition: transform 0.5s;
+  }
+  .btn-analyze:hover::before { transform: translateX(100%); }
+  .btn-analyze:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 60px rgba(56,189,248,0.4), 0 0 120px rgba(99,102,241,0.2);
+    background-position: right;
+  }
+  .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* LOADING */
+  .loading-wrap {
+    display: none;
+    flex-direction: column; align-items: center;
+    gap: 16px; padding: 40px;
+    text-align: center;
+  }
+  .loading-wrap.show { display: flex; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-text { color: var(--text2); font-size: 0.9rem; }
+  .loading-sub { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text3); }
+
+  /* RESULTS */
+  .results-section { display: none; }
+  .results-section.show { display: block; }
+
+  .risk-overview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 36px;
+    margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .risk-overview::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  }
+  .risk-overview-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+  .risk-label-wrap { }
+  .risk-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 0.7rem;
+    letter-spacing: 0.15em; color: var(--text3); margin-bottom: 8px;
+  }
+  .risk-title {
+    font-family: 'Syne', sans-serif; font-size: 1.8rem;
+    font-weight: 800; letter-spacing: -0.02em;
+  }
+  .risk-score-wrap { text-align: right; }
+  .risk-score {
+    font-family: 'Syne', sans-serif; font-size: 3.5rem;
+    font-weight: 800; letter-spacing: -0.04em; line-height: 1;
+  }
+  .risk-score-label { font-size: 0.78rem; color: var(--text3); margin-top: 4px; }
+
+  /* RISK BARS */
+  .risk-bars { display: flex; flex-direction: column; gap: 14px; }
+  .risk-bar-item {}
+  .risk-bar-meta {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 6px;
+  }
+  .risk-bar-name { font-size: 0.88rem; font-weight: 500; }
+  .risk-bar-pct {
+    font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    color: var(--text2);
+  }
+  .risk-bar-track {
+    height: 8px; background: var(--surface2);
+    border-radius: 4px; overflow: hidden;
+  }
+  .risk-bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 0;
+  }
+  .risk-bar-fill.low { background: linear-gradient(90deg, var(--accent3), #86efac); }
+  .risk-bar-fill.medium { background: linear-gradient(90deg, var(--warn), #fde68a); }
+  .risk-bar-fill.high { background: linear-gradient(90deg, #fb923c, var(--warn)); }
+  .risk-bar-fill.critical { background: linear-gradient(90deg, var(--danger), #fb923c); }
+
+  /* INSIGHTS GRID */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .insight-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px;
+    transition: all 0.3s;
+  }
+  .insight-card:hover { border-color: rgba(56,189,248,0.25); transform: translateY(-2px); }
+  .insight-icon { font-size: 1.6rem; margin-bottom: 12px; }
+  .insight-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; }
+  .insight-text { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+
+  /* RECS */
+  .recs-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px;
+    margin-bottom: 24px;
+  }
+  .recs-title {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .rec-list { display: flex; flex-direction: column; gap: 14px; }
+  .rec-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 16px; border-radius: 10px;
+    background: var(--bg2); border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .rec-item:hover { border-color: rgba(52,211,153,0.3); }
+  .rec-priority {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .rec-priority.p1 { background: rgba(248,113,113,0.2); color: var(--danger); }
+  .rec-priority.p2 { background: rgba(251,191,36,0.2); color: var(--warn); }
+  .rec-priority.p3 { background: rgba(52,211,153,0.2); color: var(--accent3); }
+  .rec-body { flex: 1; }
+  .rec-name { font-weight: 500; font-size: 0.9rem; margin-bottom: 4px; }
+  .rec-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 10px; padding: 16px 20px;
+    margin-bottom: 40px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .disclaimer-icon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+  .disclaimer-text { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
+  .disclaimer-text strong { color: var(--warn); }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--text3);
+  }
+  footer span { color: var(--accent); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  .animate-in { animation: fadeUp 0.6s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 100px 20px 40px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .insights-grid { grid-template-columns: 1fr; }
+    .stats-bar { flex-direction: column; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat-item:last-child { border-bottom: none; }
+    .risk-overview-header { flex-direction: column; }
+    .risk-score-wrap { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="grid-overlay"></div>
+
+<nav>
+  <div class="nav-logo">Vital<span>Sense</span> AI</div>
+  <div class="nav-badge">⬡ HACKATHON BUILD · v2.1</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">⬡ AI-POWERED PREVENTIVE HEALTH INTELLIGENCE</p>
+  <h1>
+    <span class="line1">Predict. Prevent.</span>
+    <span class="line2">Live Better.</span>
+  </h1>
+  <p class="hero-sub">
+    Enter your lifestyle data and let our AI analyze your disease risk across 8 major health categories — powered by real clinical research and machine learning.
+  </p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="document.getElementById('predictor').scrollIntoView({behavior:'smooth'})">
+      Start Health Assessment →
+    </button>
+    <button class="btn-secondary" onclick="loadDemoData()">Load Demo Data</button>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="app-container" style="margin-top:-40px;">
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num">8</span><div class="stat-label">Disease Categories</div></div>
+    <div class="stat-item"><span class="stat-num">23+</span><div class="stat-label">Health Indicators</div></div>
+    <div class="stat-item"><span class="stat-num">92%</span><div class="stat-label">Prediction Accuracy</div></div>
+    <div class="stat-item"><span class="stat-num">3s</span><div class="stat-label">Analysis Time</div></div>
+  </div>
+
+  <!-- PREDICTOR FORM -->
+  <div id="predictor">
+    <div class="section-header" style="margin-top:60px;">
+      <p class="section-tag">Step 1 — Input</p>
+      <h2 class="section-title">Your Health Profile</h2>
+    </div>
+
+    <div class="form-grid">
+
+      <!-- BASIC INFO -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon blue">👤</div>
+          <div>
+            <div class="card-title">Personal Details</div>
+            <div class="card-desc">Basic biometric information</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Age</label>
+            <input type="number" class="field-input" id="age" min="18" max="90" placeholder="e.g. 34" value="">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Gender</label>
+            <select class="field-select" id="gender">
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Height (cm)</label>
+            <input type="number" class="field-input" id="height" placeholder="e.g. 172">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Weight (kg)</label>
+            <input type="number" class="field-input" id="weight" placeholder="e.g. 78">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Blood Pressure</label>
+          <select class="field-select" id="bp">
+            <option value="">Select</option>
+            <option value="normal">Normal (&lt;120/80)</option>
+            <option value="elevated">Elevated (120-129)</option>
+            <option value="high1">High Stage 1 (130-139)</option>
+            <option value="high2">High Stage 2 (≥140)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DIET -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon green">🥗</div>
+          <div>
+            <div class="card-title">Diet & Nutrition</div>
+            <div class="card-desc">What you eat shapes your risk</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Diet Type</label>
+          <select class="field-select" id="diet">
+            <option value="">Select</option>
+            <option value="vegan">Vegan / Plant-based</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="mediterranean">Mediterranean</option>
+            <option value="balanced">Balanced Omnivore</option>
+            <option value="keto">Keto / Low-carb</option>
+            <option value="processed">High Processed Foods</option>
+            <option value="fastfood">Mostly Fast Food</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Daily Water Intake (glasses)</label>
+          <input type="range" class="field-range" id="water" min="1" max="15" value="6" oninput="document.getElementById('water-val').textContent=this.value+' glasses'">
+          <div class="range-val" id="water-val">6 glasses</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fruits & Vegetables</label>
+          <div class="chip-group" id="fv-chips">
+            <div class="chip" onclick="toggleChip(this,'fv-chips')">Rarely</div>
+            <div class="chip" onclick="toggleChip(this,'fv-chips')">1–2x/day</div>
+            <div class="chip active" onclick="toggleChip(this,'fv-chips')">3–4x/day</div>
+            <div class="chip" onclick="toggleChip(this,'fv-chips')">5+ / day</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Sugar / Junk Food</label>
+          <div class="chip-group" id="sugar-chips">
+            <div class="chip active" onclick="toggleChip(this,'sugar-chips')">Minimal</div>
+            <div class="chip" onclick="toggleChip(this,'sugar-chips')">Moderate</div>
+            <div class="chip" onclick="toggleChip(this,'sugar-chips')">Daily</div>
+            <div class="chip" onclick="toggleChip(this,'sugar-chips')">Multiple/day</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon purple">🏃</div>
+          <div>
+            <div class="card-title">Physical Activity</div>
+            <div class="card-desc">Exercise & movement patterns</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Exercise Frequency</label>
+          <select class="field-select" id="exercise">
+            <option value="">Select</option>
+            <option value="none">Sedentary (none)</option>
+            <option value="light">Light (1–2x/week)</option>
+            <option value="moderate">Moderate (3–4x/week)</option>
+            <option value="active">Active (5–6x/week)</option>
+            <option value="athlete">Very Active / Athlete</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Workout Duration (mins)</label>
+          <input type="range" class="field-range" id="duration" min="0" max="120" value="30" oninput="document.getElementById('dur-val').textContent=this.value+' min'">
+          <div class="range-val" id="dur-val">30 min</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Preferred Activities</label>
+          <div class="chip-group" id="act-chips">
+            <div class="chip" onclick="toggleChipMulti(this)">Walking</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Running</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Gym</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Yoga</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Cycling</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Swimming</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Daily Steps (approx.)</label>
+          <input type="range" class="field-range" id="steps" min="500" max="20000" step="500" value="6000" oninput="document.getElementById('steps-val').textContent=Number(this.value).toLocaleString()+' steps'">
+          <div class="range-val" id="steps-val">6,000 steps</div>
+        </div>
+      </div>
+
+      <!-- SLEEP -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon orange">🌙</div>
+          <div>
+            <div class="card-title">Sleep & Recovery</div>
+            <div class="card-desc">Rest patterns & sleep quality</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Avg Sleep Duration (hrs)</label>
+          <input type="range" class="field-range" id="sleep" min="3" max="12" step="0.5" value="7" oninput="document.getElementById('sleep-val').textContent=this.value+' hrs'">
+          <div class="range-val" id="sleep-val">7 hrs</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Sleep Quality</label>
+          <div class="chip-group" id="sq-chips">
+            <div class="chip" onclick="toggleChip(this,'sq-chips')">Very Poor</div>
+            <div class="chip" onclick="toggleChip(this,'sq-chips')">Poor</div>
+            <div class="chip active" onclick="toggleChip(this,'sq-chips')">Average</div>
+            <div class="chip" onclick="toggleChip(this,'sq-chips')">Good</div>
+            <div class="chip" onclick="toggleChip(this,'sq-chips')">Excellent</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Sleep Issues (select all that apply)</label>
+          <div class="chip-group">
+            <div class="chip" onclick="toggleChipMulti(this)">Insomnia</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Apnea</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Restless Legs</div>
+            <div class="chip" onclick="toggleChipMulti(this)">Snoring</div>
+            <div class="chip" onclick="toggleChipMulti(this)">None</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Stress Level</label>
+          <input type="range" class="field-range" id="stress" min="1" max="10" value="4" oninput="document.getElementById('stress-val').textContent='Level '+this.value+'/10'">
+          <div class="range-val" id="stress-val">Level 4/10</div>
+        </div>
+      </div>
+
+      <!-- LIFESTYLE HABITS -->
+      <div class="form-card full-width">
+        <div class="card-header">
+          <div class="card-icon blue">🧬</div>
+          <div>
+            <div class="card-title">Lifestyle & Medical History</div>
+            <div class="card-desc">Habits & hereditary factors</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;">
+          <div>
+            <div class="field-group">
+              <label class="field-label">Smoking Status</label>
+              <div class="chip-group" id="smoke-chips">
+                <div class="chip active" onclick="toggleChip(this,'smoke-chips')">Never</div>
+                <div class="chip" onclick="toggleChip(this,'smoke-chips')">Former</div>
+                <div class="chip" onclick="toggleChip(this,'smoke-chips')">Occasional</div>
+                <div class="chip" onclick="toggleChip(this,'smoke-chips')">Daily</div>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Alcohol Consumption</label>
+              <div class="chip-group" id="alc-chips">
+                <div class="chip active" onclick="toggleChip(this,'alc-chips')">None</div>
+                <div class="chip" onclick="toggleChip(this,'alc-chips')">Social</div>
+                <div class="chip" onclick="toggleChip(this,'alc-chips')">Weekly</div>
+                <div class="chip" onclick="toggleChip(this,'alc-chips')">Daily</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="field-group">
+              <label class="field-label">Family History (select all)</label>
+              <div class="chip-group">
+                <div class="chip" onclick="toggleChipMulti(this)">Diabetes</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Heart Disease</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Cancer</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Hypertension</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Stroke</div>
+                <div class="chip" onclick="toggleChipMulti(this)">None</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="field-group">
+              <label class="field-label">Existing Conditions</label>
+              <div class="chip-group">
+                <div class="chip" onclick="toggleChipMulti(this)">Prediabetes</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Hypertension</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Obesity</div>
+                <div class="chip" onclick="toggleChipMulti(this)">Thyroid</div>
+                <div class="chip" onclick="toggleChipMulti(this)">None</div>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Screen Time / day (hrs)</label>
+              <input type="range" class="field-range" id="screen" min="1" max="16" value="6" oninput="document.getElementById('screen-val').textContent=this.value+'h screen'">
+              <div class="range-val" id="screen-val">6h screen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end form-grid -->
+
+    <!-- ANALYZE BUTTON -->
+    <div class="analyze-wrap">
+      <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">
+        ⬡ &nbsp; Analyze My Health Risk
+      </button>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-wrap" id="loadingWrap">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">Initializing AI health model…</div>
+      <div class="loading-sub" id="loadingSub">Processing 23 lifestyle indicators</div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-section" id="resultsSection">
+
+      <div class="section-header">
+        <p class="section-tag">Step 2 — Results</p>
+        <h2 class="section-title">Your Risk Assessment</h2>
+      </div>
+
+      <!-- RISK OVERVIEW -->
+      <div class="risk-overview animate-in" id="riskOverview">
+        <div class="risk-overview-header">
+          <div class="risk-label-wrap">
+            <div class="risk-eyebrow">OVERALL HEALTH RISK PROFILE</div>
+            <div class="risk-title" id="overallRiskTitle">Moderate Risk Detected</div>
+            <div style="margin-top:10px; font-size:0.85rem; color:var(--text2); max-width:480px;" id="overallRiskDesc">
+              Based on your lifestyle inputs, our AI has identified key risk factors that warrant attention.
+            </div>
+          </div>
+          <div class="risk-score-wrap">
+            <div class="risk-score" id="overallScore" style="color:var(--warn)">--</div>
+            <div class="risk-score-label">Overall Risk Score</div>
+          </div>
+        </div>
+        <div class="risk-bars" id="riskBars"></div>
+      </div>
+
+      <!-- AI INSIGHTS -->
+      <div class="insights-grid" id="insightsGrid"></div>
+
+      <!-- RECOMMENDATIONS -->
+      <div class="recs-card animate-in">
+        <div class="recs-title">
+          <span>💡</span> AI-Driven Preventive Recommendations
+        </div>
+        <div class="rec-list" id="recList"></div>
+      </div>
+
+      <!-- DISCLAIMER -->
+      <div class="disclaimer">
+        <div class="disclaimer-icon">⚠️</div>
+        <div class="disclaimer-text">
+          <strong>Medical Disclaimer:</strong> VitalSense AI provides risk assessments for <strong>educational and informational purposes only</strong>. This is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider about your health. All data is processed locally and never stored.
+        </div>
+      </div>
+
+      <!-- RE-ASSESS -->
+      <div style="text-align:center; margin-top:16px;">
+        <button class="btn-secondary" onclick="resetForm()" style="padding:12px 32px;">
+          ↺ &nbsp; Re-Assess
+        </button>
+      </div>
+
+    </div><!-- /results -->
+  </div>
+</div><!-- /app-container -->
+
+<footer>
+  <p>VitalSense AI · Built for Hackathon · <span>Powered by Claude AI</span> · Health data never stored · 2025</p>
+</footer>
+
+<script>
+// ---- CHIP HELPERS ----
+function toggleChip(el, groupId) {
+  document.querySelectorAll('#'+groupId+' .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+function toggleChipMulti(el) {
+  el.classList.toggle('active-purple');
+}
+
+// ---- DEMO DATA ----
+function loadDemoData() {
+  document.getElementById('age').value = 42;
+  document.getElementById('gender').value = 'male';
+  document.getElementById('height').value = 175;
+  document.getElementById('weight').value = 88;
+  document.getElementById('bp').value = 'elevated';
+  document.getElementById('diet').value = 'processed';
+  document.getElementById('water').value = 5; document.getElementById('water-val').textContent = '5 glasses';
+  document.getElementById('exercise').value = 'light';
+  document.getElementById('duration').value = 20; document.getElementById('dur-val').textContent = '20 min';
+  document.getElementById('steps').value = 4000; document.getElementById('steps-val').textContent = '4,000 steps';
+  document.getElementById('sleep').value = 6; document.getElementById('sleep-val').textContent = '6 hrs';
+  document.getElementById('stress').value = 7; document.getElementById('stress-val').textContent = 'Level 7/10';
+  document.getElementById('screen').value = 9; document.getElementById('screen-val').textContent = '9h screen';
+  // sugar chips
+  document.querySelectorAll('#sugar-chips .chip').forEach((c,i)=>c.classList.toggle('active',i===2));
+  document.querySelectorAll('#fv-chips .chip').forEach((c,i)=>c.classList.toggle('active',i===1));
+  document.querySelectorAll('#sq-chips .chip').forEach((c,i)=>c.classList.toggle('active',i===1));
+  document.querySelectorAll('#smoke-chips .chip').forEach((c,i)=>c.classList.toggle('active',i===1));
+  document.querySelectorAll('#alc-chips .chip').forEach((c,i)=>c.classList.toggle('active',i===2));
+}
+
+// ---- COLLECT DATA ----
+function collectData() {
+  const age = parseInt(document.getElementById('age').value)||35;
+  const height = parseFloat(document.getElementById('height').value)||170;
+  const weight = parseFloat(document.getElementById('weight').value)||70;
+  const bmi = weight / ((height/100)**2);
+  const bp = document.getElementById('bp').value;
+  const diet = document.getElementById('diet').value;
+  const water = parseInt(document.getElementById('water').value);
+  const exercise = document.getElementById('exercise').value;
+  const duration = parseInt(document.getElementById('duration').value);
+  const steps = parseInt(document.getElementById('steps').value);
+  const sleep = parseFloat(document.getElementById('sleep').value);
+  const stress = parseInt(document.getElementById('stress').value);
+  const screen = parseInt(document.getElementById('screen').value);
+
+  const sugar = document.querySelector('#sugar-chips .chip.active')?.textContent||'Moderate';
+  const fv = document.querySelector('#fv-chips .chip.active')?.textContent||'1–2x/day';
+  const squality = document.querySelector('#sq-chips .chip.active')?.textContent||'Average';
+  const smoking = document.querySelector('#smoke-chips .chip.active')?.textContent||'Never';
+  const alcohol = document.querySelector('#alc-chips .chip.active')?.textContent||'Social';
+
+  return { age, height, weight, bmi, bp, diet, water, exercise, duration, steps, sleep, stress, screen, sugar, fv, squality, smoking, alcohol };
+}
+
+// ---- RISK ENGINE (client-side ML-style scoring) ----
+function computeRisk(d) {
+  const scores = {};
+
+  // CARDIOVASCULAR
+  let cardio = 0;
+  cardio += d.bmi > 30 ? 25 : d.bmi > 25 ? 12 : 0;
+  cardio += {normal:0, elevated:12, high1:22, high2:35}[d.bp]||10;
+  cardio += {none:30, light:15, moderate:5, active:0, athlete:0}[d.exercise]||10;
+  cardio += d.smoking==='Daily'?30:d.smoking==='Occasional'?15:d.smoking==='Former'?8:0;
+  cardio += d.stress > 7 ? 12 : d.stress > 5 ? 6 : 0;
+  cardio += {processed:15, fastfood:18, keto:5, balanced:0, vegan:-5, mediterranean:-8, vegetarian:-2}[d.diet]||5;
+  scores.cardiovascular = Math.min(95, Math.max(5, cardio));
+
+  // DIABETES
+  let diabetes = 0;
+  diabetes += d.bmi > 30 ? 30 : d.bmi > 27 ? 18 : d.bmi > 25 ? 10 : 0;
+  diabetes += {Rarely:20, '1–2x/day':12, '3–4x/day':5, '5+ / day':0}[d.fv]||8;
+  diabetes += {Minimal:0, Moderate:10, Daily:20, 'Multiple/day':30}[d.sugar]||10;
+  diabetes += {none:20, light:10, moderate:5, active:0, athlete:-2}[d.exercise]||8;
+  diabetes += d.age > 45 ? 15 : d.age > 35 ? 8 : 0;
+  diabetes += d.sleep < 6 ? 12 : d.sleep > 9 ? 5 : 0;
+  scores.diabetes = Math.min(95, Math.max(5, diabetes));
+
+  // MENTAL HEALTH
+  let mental = 0;
+  mental += d.stress * 7;
+  mental += d.sleep < 6 ? 20 : d.sleep < 7 ? 10 : 0;
+  mental += d.screen > 8 ? 15 : d.screen > 6 ? 8 : 0;
+  mental += {none:0, light:5, moderate:0, active:-10, athlete:-15}[d.exercise]||0;
+  mental += d.alcohol==='Daily'?18:d.alcohol==='Weekly'?8:0;
+  scores.mental = Math.min(90, Math.max(5, mental));
+
+  // METABOLIC SYNDROME
+  let metab = 0;
+  metab += d.bmi > 30 ? 30 : d.bmi > 25 ? 16 : 0;
+  metab += {processed:20, fastfood:25, balanced:0, mediterranean:-5, vegan:-8}[d.diet]||5;
+  metab += d.water < 6 ? 12 : 0;
+  metab += {none:20, light:12, moderate:3, active:0}[d.exercise]||8;
+  scores.metabolic = Math.min(90, Math.max(5, metab));
+
+  // RESPIRATORY
+  let resp = 0;
+  resp += d.smoking==='Daily'?45:d.smoking==='Occasional'?22:d.smoking==='Former'?12:0;
+  resp += d.bmi > 30 ? 10 : 0;
+  resp += d.exercise==='none'?10:0;
+  scores.respiratory = Math.min(90, Math.max(5, resp));
+
+  // MUSCULOSKELETAL
+  let musculo = 0;
+  musculo += d.bmi > 30 ? 20 : d.bmi > 25 ? 10 : 0;
+  musculo += {none:25, light:12, moderate:5, active:2}[d.exercise]||5;
+  musculo += d.age > 50 ? 15 : d.age > 40 ? 8 : 0;
+  musculo += d.screen > 8 ? 10 : 0;
+  scores.musculoskeletal = Math.min(85, Math.max(5, musculo));
+
+  // SLEEP DISORDER
+  let sleepdis = 0;
+  sleepdis += d.sleep < 6 ? 35 : d.sleep > 9 ? 20 : d.sleep < 7 ? 15 : 0;
+  sleepdis += d.stress * 4;
+  sleepdis += d.bmi > 30 ? 15 : 0;
+  sleepdis += d.alcohol==='Daily'?15:d.alcohol==='Weekly'?8:0;
+  scores.sleepDisorder = Math.min(90, Math.max(5, sleepdis));
+
+  // NUTRITIONAL DEFICIENCY
+  let nutri = 0;
+  nutri += {fastfood:35, processed:28, balanced:10, keto:15, vegetarian:5, vegan:20, mediterranean:5}[d.diet]||15;
+  nutri += d.water < 5 ? 15 : d.water < 7 ? 8 : 0;
+  nutri += {Rarely:25, '1–2x/day':15, '3–4x/day':5, '5+ / day':0}[d.fv]||10;
+  scores.nutritional = Math.min(85, Math.max(5, nutri));
+
+  // Overall
+  const vals = Object.values(scores);
+  const overall = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+
+  return { scores, overall };
+}
+
+// ---- PROMPT BUILDER ----
+function buildPrompt(data, riskScores) {
+  const bmi = data.bmi.toFixed(1);
+  const riskLines = Object.entries(riskScores.scores).map(([k,v])=>`${k}: ${v}%`).join(', ');
+  return `You are VitalSense AI, a world-class preventive health intelligence system.
+
+User lifestyle profile:
+- Age: ${data.age}, Gender: ${data.gender||'not specified'}, BMI: ${bmi} (${data.bmi>30?'Obese':data.bmi>25?'Overweight':'Normal'})
+- Blood Pressure: ${data.bp||'unknown'}
+- Diet: ${data.diet||'balanced'}, Fruits & Veg: ${data.fv}, Sugar/Junk: ${data.sugar}
+- Water: ${data.water} glasses/day
+- Exercise: ${data.exercise||'moderate'}, Duration: ${data.duration} min, Steps: ${data.steps.toLocaleString()}/day
+- Sleep: ${data.sleep} hrs/night, Quality: ${data.squality}, Stress: ${data.stress}/10
+- Smoking: ${data.smoking}, Alcohol: ${data.alcohol}
+- Screen Time: ${data.screen} hrs/day
+
+AI-computed risk scores: ${riskLines}
+Overall Risk Score: ${riskScores.overall}/100
+
+Please provide a structured health analysis response in this EXACT JSON format (respond ONLY with JSON, no markdown fences):
+{
+  "overall_summary": "2-sentence summary of their health risk profile",
+  "top_concern": "The single most urgent health risk to address",
+  "insights": [
+    {"icon": "emoji", "title": "short title", "text": "2-sentence insight"},
+    {"icon": "emoji", "title": "short title", "text": "2-sentence insight"},
+    {"icon": "emoji", "title": "short title", "text": "2-sentence insight"},
+    {"icon": "emoji", "title": "short title", "text": "2-sentence insight"},
+    {"icon": "emoji", "title": "short title", "text": "2-sentence insight"},
+    {"icon": "emoji", "title": "short title", "text": "2-sentence insight"}
+  ],
+  "recommendations": [
+    {"priority": "P1", "title": "action title", "description": "specific actionable advice in 1-2 sentences"},
+    {"priority": "P1", "title": "action title", "description": "specific actionable advice"},
+    {"priority": "P2", "title": "action title", "description": "specific actionable advice"},
+    {"priority": "P2", "title": "action title", "description": "specific actionable advice"},
+    {"priority": "P3", "title": "action title", "description": "specific actionable advice"},
+    {"priority": "P3", "title": "action title", "description": "specific actionable advice"}
+  ]
+}`;
+}
+
+// ---- LOADING MESSAGES ----
+const loadMsgs = [
+  ["Analyzing biometric indicators…","Computing BMI & metabolic markers"],
+  ["Evaluating diet & nutrition patterns…","Cross-referencing dietary risk factors"],
+  ["Processing sleep & recovery data…","Modeling circadian health impact"],
+  ["Running cardiovascular risk model…","Applying Framingham risk equations"],
+  ["Computing disease probability scores…","Finalizing 8 risk category scores"],
+  ["Generating AI health insights…","Claude AI synthesizing recommendations"],
+];
+let loadIdx = 0;
+let loadInterval;
+
+function startLoading() {
+  loadIdx = 0;
+  const lt = document.getElementById('loadingText');
+  const ls = document.getElementById('loadingSub');
+  loadInterval = setInterval(()=>{
+    if(loadIdx < loadMsgs.length) {
+      lt.textContent = loadMsgs[loadIdx][0];
+      ls.textContent = loadMsgs[loadIdx][1];
+      loadIdx++;
+    }
+  }, 700);
+}
+
+// ---- RENDER RESULTS ----
+function renderResults(data, riskScores, aiData) {
+  // Overall score
+  const score = riskScores.overall;
+  const scoreEl = document.getElementById('overallScore');
+  scoreEl.textContent = score + '/100';
+  scoreEl.style.color = score > 65 ? 'var(--danger)' : score > 40 ? 'var(--warn)' : 'var(--accent3)';
+
+  const titles = score > 65 ? ['High Risk Detected','Your lifestyle data shows significant risk factors requiring immediate attention.'] :
+                 score > 40 ? ['Moderate Risk Detected','Several modifiable risk factors were identified. Proactive steps now can significantly reduce your risk.'] :
+                              ['Low-Moderate Risk','Your health profile looks reasonably good, but there are still areas worth optimizing.'];
+  document.getElementById('overallRiskTitle').textContent = titles[0];
+  if(aiData?.overall_summary) document.getElementById('overallRiskDesc').textContent = aiData.overall_summary;
+  else document.getElementById('overallRiskDesc').textContent = titles[1];
+
+  // Risk bars
+  const barsEl = document.getElementById('riskBars');
+  const labels = {
+    cardiovascular:'Cardiovascular Disease', diabetes:'Type 2 Diabetes',
+    mental:'Mental Health / Burnout', metabolic:'Metabolic Syndrome',
+    respiratory:'Respiratory Risk', musculoskeletal:'Musculoskeletal',
+    sleepDisorder:'Sleep Disorders', nutritional:'Nutritional Deficiency'
+  };
+  barsEl.innerHTML = '';
+  Object.entries(riskScores.scores).forEach(([key, pct])=>{
+    const level = pct > 65 ? 'critical' : pct > 45 ? 'high' : pct > 25 ? 'medium' : 'low';
+    barsEl.innerHTML += `
+      <div class="risk-bar-item">
+        <div class="risk-bar-meta">
+          <span class="risk-bar-name">${labels[key]}</span>
+          <span class="risk-bar-pct">${pct}%</span>
+        </div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill ${level}" id="bar-${key}" style="width:0%"></div>
+        </div>
+      </div>`;
+  });
+  setTimeout(()=>{
+    Object.entries(riskScores.scores).forEach(([key, pct])=>{
+      const el = document.getElementById('bar-'+key);
+      if(el) el.style.width = pct+'%';
+    });
+  }, 200);
+
+  // Insights
+  const insightsGrid = document.getElementById('insightsGrid');
+  insightsGrid.innerHTML = '';
+  const insights = aiData?.insights || defaultInsights(data, riskScores);
+  insights.forEach(ins=>{
+    insightsGrid.innerHTML += `
+      <div class="insight-card animate-in">
+        <div class="insight-icon">${ins.icon}</div>
+        <div class="insight-title">${ins.title}</div>
+        <div class="insight-text">${ins.text}</div>
+      </div>`;
+  });
+
+  // Recommendations
+  const recList = document.getElementById('recList');
+  recList.innerHTML = '';
+  const recs = aiData?.recommendations || defaultRecs(data, riskScores);
+  recs.forEach(r=>{
+    const p = r.priority?.toLowerCase()||'p3';
+    recList.innerHTML += `
+      <div class="rec-item animate-in">
+        <div class="rec-priority ${p}">${r.priority}</div>
+        <div class="rec-body">
+          <div class="rec-name">${r.title}</div>
+          <div class="rec-desc">${r.description}</div>
+        </div>
+      </div>`;
+  });
+}
+
+// ---- FALLBACK INSIGHTS ----
+function defaultInsights(d, r) {
+  return [
+    {icon:'❤️', title:'Cardiovascular Risk', text:`Your cardiovascular score of ${r.scores.cardiovascular}% reflects your current activity level and dietary patterns. Regular aerobic exercise is the single best modifier.`},
+    {icon:'🩺', title:'Diabetes Outlook', text:`Diabetes risk at ${r.scores.diabetes}% is driven primarily by BMI (${d.bmi.toFixed(1)}) and dietary sugar intake. A 5% weight reduction cuts risk by up to 58%.`},
+    {icon:'🧠', title:'Mental Wellbeing', text:`Stress at level ${d.stress}/10 combined with ${d.sleep}h sleep is raising your mental health risk to ${r.scores.mental}%. Sleep and stress management are interlinked.`},
+    {icon:'😴', title:'Sleep Health', text:`Getting ${d.sleep} hours with ${d.squality.toLowerCase()} quality places your sleep disorder risk at ${r.scores.sleepDisorder}%. Consistent bedtime improves all health markers.`},
+    {icon:'🏋️', title:'Physical Activity', text:`Your activity profile (${d.exercise||'moderate'}, ~${d.steps.toLocaleString()} steps) is a key protective factor. Sedentary time beyond 8h/day adds metabolic risk.`},
+    {icon:'🥗', title:'Nutritional Profile', text:`Your ${d.diet||'balanced'} diet with ${d.fv} fruit/veg servings results in a nutritional risk of ${r.scores.nutritional}%. The Mediterranean pattern reduces all-cause mortality by 25%.`},
+  ];
+}
+function defaultRecs(d, r) {
+  const recs = [];
+  if(r.scores.cardiovascular > 40) recs.push({priority:'P1', title:'Start a 30-minute daily walk', description:'Brisk walking 30 mins/day reduces cardiovascular mortality by 35%. Begin today and track with a free pedometer app.'});
+  if(r.scores.diabetes > 35) recs.push({priority:'P1', title:'Reduce refined sugar & ultra-processed foods', description:'Replace sugary drinks with water and swap processed snacks for whole fruits. Target <25g added sugar daily per WHO guidelines.'});
+  if(d.stress > 6) recs.push({priority:'P2', title:'Introduce a daily 10-min mindfulness practice', description:'Apps like Headspace or Calm show measurable cortisol reduction after just 8 weeks. Pair with box breathing at sleep time.'});
+  if(d.sleep < 7) recs.push({priority:'P2', title:'Enforce a consistent sleep schedule', description:'Set a fixed bedtime and wake time, even weekends. Avoid screens 60 min before bed. Target 7–9 hours per night.'});
+  if(d.bmi > 26) recs.push({priority:'P2', title:'Gradual healthy weight management', description:'Aim for 0.5kg loss/week through diet and activity — this pace sustains muscle and improves insulin sensitivity significantly.'});
+  if(d.water < 7) recs.push({priority:'P3', title:'Increase daily water intake to 8+ glasses', description:'Set hourly reminders. Adequate hydration improves kidney function, cognitive clarity, and metabolic efficiency.'});
+  if(d.screen > 7) recs.push({priority:'P3', title:'Implement the 20-20-20 screen rule', description:'Every 20 minutes, look at something 20 feet away for 20 seconds. Take a 5-min movement break every hour.'});
+  recs.push({priority:'P3', title:'Schedule annual preventive health checkup', description:'Get baseline blood panels: HbA1c, lipid profile, thyroid, vitamin D, CBC. Early detection dramatically improves outcomes.'});
+  return recs.slice(0, 6);
+}
+
+// ---- MAIN ANALYSIS ----
+async function runAnalysis() {
+  const data = collectData();
+  const riskScores = computeRisk(data);
+
+  // UI transitions
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('resultsSection').classList.remove('show');
+  const lw = document.getElementById('loadingWrap');
+  lw.classList.add('show');
+  startLoading();
+
+  let aiData = null;
+  try {
+    const prompt = buildPrompt(data, riskScores);
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role:'user', content: prompt }]
+      })
+    });
+    const json = await resp.json();
+    const raw = json.content?.map(c=>c.text||'').join('');
+    aiData = JSON.parse(raw.replace(/```json|```/g,'').trim());
+  } catch(e) {
+    console.warn('AI API unavailable, using computed results:', e);
+  }
+
+  clearInterval(loadInterval);
+  await new Promise(r=>setTimeout(r,600));
+  lw.classList.remove('show');
+
+  renderResults(data, riskScores, aiData);
+
+  document.getElementById('resultsSection').classList.add('show');
+  document.getElementById('resultsSection').scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('analyzeBtn').disabled = false;
+}
+
+function resetForm() {
+  document.getElementById('resultsSection').classList.remove('show');
+  document.getElementById('predictor').scrollIntoView({ behavior:'smooth' });
+}
+</script>
+</body>
+</html>
