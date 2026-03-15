@@ -8,8 +8,7 @@ Domain: Healthcare | Problem Statement: PS-07
 
 👥 Team: sheCodes
 
-Alisha Ashok Rathod , 
-
+Alisha Ashok Rathod
 Kajal Virendrasingh Rathor
 
 ---
