@@ -9,6 +9,7 @@ Domain: Healthcare | Problem Statement: PS-07
 👥 Team: sheCodes
 
 Alisha Ashok Rathod
+
 Kajal Virendrasingh Rathor
 
 ---
@@ -30,8 +31,11 @@ An AI-powered Disease Risk Predictor that analyzes lifestyle data such as diet, 
 🛠️ Tech Stack
 
 | Frontend -> HTML, CSS, JavaScript 
+
 | AI Engine -> Claude AI API (Anthropic) 
-| Risk Scoring -> Custom ML-style scoring engine 
+
+| Risk Scoring -> Custom ML-style scoring engine
+ 
 | Deployment ->GitHub Pages 
 
 ---
