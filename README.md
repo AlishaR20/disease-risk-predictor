@@ -18,11 +18,16 @@ An AI-powered Disease Risk Predictor that analyzes lifestyle data such as diet, 
 
 ---
 
-✅ Expected Outcomes Achieved
+✅ Expected Outcomes Achieve
+
 ✅ AI-powered disease risk prediction
+
 ✅ Personalized preventive health recommendations
+
 ✅ AI-driven health insights across 8 disease categories
+
 ✅ Visual risk score dashboard with severity levels
+
 ✅ Privacy-first — no health data stored
 
 ---
