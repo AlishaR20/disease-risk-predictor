@@ -1,18 +1,5 @@
 
 
-🏆 Swarajya Hackfest 2026 — Round 1 Submission
-Domain: Healthcare | Problem Statement: PS-07
-
----
-
-👥 Team: sheCodes
-
-Alisha Ashok Rathod
-
-Kajal Virendrasingh Rathor
-
----
-
 🎯 Objective
 An AI-powered Disease Risk Predictor that analyzes lifestyle data such as diet, physical activity, and sleep patterns to predict possible health risks and provide personalized preventive health recommendations instantly.
 
@@ -61,5 +48,3 @@ Privacy-first no health data stored
 - 💡 Prioritized recommendations — P1, P2, P3 action plan
 
 
-
-Team sheCodes | Swarajya Hackfest 2026 🚀
